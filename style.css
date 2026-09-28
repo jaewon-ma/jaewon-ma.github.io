@@ -1,3 +1,7 @@
+body {
+    background-color: rgb(32, 32, 32);
+}
+
 .sewing-machine-button {
     background-image: url('images/sewing-machine.png');
     background-size: cover;
@@ -8,6 +12,23 @@
     font-weight: bold;
     padding: 345px 400px;
     cursor: pointer;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* keeps text readable over image */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+
+/* Weightlifter button */
+
+.weight-button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+#weightVideo {
+    width: 500px;
+    height: auto;
+    display: block;
+    background: transparent;
 }
