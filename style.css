@@ -2,20 +2,46 @@ body {
     background-color: rgb(32, 32, 32);
 }
 
+.button-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0px;
+    flex-wrap: wrap;
+}
+
 .sewing-machine-button {
     background-image: url('images/sewing-machine.png');
-    background-size: cover;
+    background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 200px;
+    padding: 0;
     border: none;
     border-radius: 8px;
     background-color: rgb(32, 32, 32);
     font-weight: bold;
-    padding: 345px 400px;
     cursor: pointer;
     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+.lamp-button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+    top: 100px;
+}
+
+#lampImg {
+    width: auto;
+    height: 500px;
+    display: block;
+    background: transparent;
+}
 
 /* Weightlifter button */
 
@@ -24,10 +50,11 @@ body {
     background: transparent;
     padding: 0;
     cursor: pointer;
+    margin-left: -75px;
 }
 
 #weightVideo {
-    width: 500px;
+    width: 300px;
     height: auto;
     display: block;
     background: transparent;
