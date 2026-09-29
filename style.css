@@ -34,6 +34,7 @@ body {
     cursor: pointer;
     position: relative;
     top: 100px;
+    user-select: none;
 }
 
 #lampImg {

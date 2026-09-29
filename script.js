@@ -20,7 +20,11 @@ const weightVideo = document.getElementById('weightVideo');
 
 weightVideo.playbackRate = 1.7;
 
+const DROP_TIME = 2.12; // seconds into weight-drop.mp4 when the weight lands
+let hasDropped = false;
+
 const playWeightAnimation = () => {
+  hasDropped = false;
   weightVideo.currentTime = 0;
   weightVideo.play();
 };
@@ -28,8 +32,67 @@ const playWeightAnimation = () => {
 const stopWeightAnimation = () => {
   weightVideo.pause();
   weightVideo.currentTime = 0;
+  landLamp();
 };
+
+weightVideo.addEventListener('timeupdate', () => {
+  if (!hasDropped && weightVideo.currentTime >= DROP_TIME) {
+    hasDropped = true;
+    jumpLamp();
+  }
+});
 
 weightBtn.addEventListener('mousedown', playWeightAnimation);
 weightBtn.addEventListener('mouseup', stopWeightAnimation);
 weightBtn.addEventListener('mouseleave', stopWeightAnimation);
+
+
+// Lamp
+
+const lampBtn = document.getElementById('lampBtn');
+const lampImg = document.getElementById('lampImg');
+
+const LEVELS = [100, 50, 25, 0];
+const BROKEN_INDEX = LEVELS.length - 1;
+const BROKEN_TIME = 60000; // 1 minute "repair time"
+
+let levelIndex = 0;
+let isOn = false;
+
+const resetLamp = () => {
+  levelIndex = 0;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+}
+
+const turnOnLamp = () => {
+  if (levelIndex === BROKEN_INDEX) return; // ignore press when broken
+  isOn = true;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-on.png`;
+  // TODO: start sewing + weightlifter interaction
+};
+
+const turnOffLamp = () => {
+  if (!isOn) return; // only react if lamp is on
+  isOn = false;
+  levelIndex++;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+
+  if (levelIndex === BROKEN_INDEX) {
+      setTimeout(resetLamp, BROKEN_TIME);
+  }
+};
+  // TODO: stop sewing + weightlifter interaction
+
+  const jumpLamp = () => {
+    if (levelIndex === BROKEN_INDEX) return; // no jump when broken
+    lampImg.src = `images/lamp-${LEVELS[levelIndex]}-jump.png`;
+  };
+
+  const landLamp = () => {
+    if (levelIndex === BROKEN_INDEX) return;
+    lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+  };
+
+lampBtn.addEventListener('mousedown', turnOnLamp);
+lampBtn.addEventListener('mouseup', turnOffLamp);
+lampBtn.addEventListener('mouseleave', turnOffLamp);
