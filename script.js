@@ -1,4 +1,5 @@
 const sewingBtn = document.getElementById('sewingBtn');
+const lampCoil = document.getElementById('lampCoil');
 
 const playSewing = () => {
   sewingBtn.style.backgroundImage = "url('images/sewing-machine.gif')";
@@ -22,7 +23,6 @@ const turbanDrop = document.getElementById('turbanDrop');
 const IDLE_SRC = 'images/weightlifter1.mp4';
 const DROP_SRC = 'images/WeightDropAnimation.mp4';
 const HAPPY_SRC = 'images/HappyAnimation.mp4';
-
 const SPEED = 1.7;
 const DROP_TIME = 2.55;
 
@@ -40,13 +40,11 @@ const setWeightVideo = (src, loop) => {
 
 const startWeightHover = () => {
   if (isDropping) return;
-
   setWeightVideo(IDLE_SRC, true);
 };
 
 const stopWeightHover = () => {
   if (isDropping) return;
-
   weightVideo.pause();
   weightVideo.src = IDLE_SRC;
   weightVideo.loop = false;
@@ -55,7 +53,6 @@ const stopWeightHover = () => {
 
 const playWeightDrop = () => {
   if (isDropping) return;
-
   isDropping = true;
   hasDropped = false;
   setWeightVideo(DROP_SRC, false);
@@ -63,7 +60,6 @@ const playWeightDrop = () => {
 
 const playHappyAnimation = () => {
   if (isDropping) return;
-
   setWeightVideo(HAPPY_SRC, true);
 };
 
@@ -128,7 +124,6 @@ weightBtn.addEventListener('click', playWeightDrop);
 const lampBtn = document.getElementById('lampBtn');
 const lampImg = document.getElementById('lampImg');
 const lampLight = document.getElementById('lampLight');
-const threadWrap = document.getElementById('threadWrap');
 
 const LEVELS = [100, 50, 25, 0];
 const BROKEN_INDEX = LEVELS.length - 1;
@@ -146,7 +141,6 @@ const resetLamp = () => {
 
 const showLampLight = () => {
   isLampHovered = true;
-
   if (levelIndex === BROKEN_INDEX) return;
   if (lampLightSuppressed) return;
 
@@ -182,7 +176,6 @@ const turnOffLamp = () => {
 
   isOn = false;
   levelIndex++;
-
   lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
 
   if (levelIndex === BROKEN_INDEX) {
@@ -211,10 +204,17 @@ lampBtn.addEventListener('mouseleave', leaveLamp);
 lampBtn.addEventListener('mousedown', turnOnLamp);
 lampBtn.addEventListener('mouseup', turnOffLamp);
 
-const restartThreadAnimation = () => {
-  threadWrap.classList.remove('active');
-  void threadWrap.offsetWidth;
-  threadWrap.classList.add('active');
+const playLampCoil = () => {
+  lampCoil.style.display = 'block';
+  lampCoil.src = '';
+
+  requestAnimationFrame(() => {
+    lampCoil.src = 'images/lamp-coil.gif';
+  });
+
+  setTimeout(() => {
+    lampCoil.style.display = 'none';
+  }, 950);
 };
 
 const playTurbanDrop = () => {
@@ -227,14 +227,13 @@ const playTurbanDrop = () => {
 
   setTimeout(() => {
     turbanDrop.style.display = 'none';
-  }, 1100);
+  }, 1200);
 };
 
 const sewingClick = () => {
   playFastSewing();
-  restartThreadAnimation();
-
-  setTimeout(playTurbanDrop, 650);
+  playLampCoil();
+  playTurbanDrop();
 
   setTimeout(() => {
     if (sewingBtn.matches(':hover')) {

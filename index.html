@@ -1,54 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>CPSC 581 Project 1: A Family of Buttons</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
 <div class="button-row">
-
     <button class="sewing-machine-button" id="sewingBtn"></button>
 
     <button class="lamp-button" id="lampBtn">
         <div class="lamp-light" id="lampLight"></div>
-
-        <svg class="thread-wrap" id="threadWrap" viewBox="0 0 500 700">
-            <path id="threadPath"
-                  d="M70 610
-               C80 470 80 280 160 170
-               C230 80 360 80 390 150
-               C420 220 340 260 270 230
-               C210 205 220 140 290 125
-               C370 105 420 160 390 210"/>
-        </svg>
-
-        <img id="lampImg"
-             src="images/lamp-100-off.png"
-             alt="Lamp"
-             draggable="false">
+        <img id="lampImg" src="images/lamp-100-off.png" alt="Lamp" draggable="false">
+        <img id="lampCoil" class="lamp-coil" src="" alt="">
     </button>
 
     <button class="weight-button" id="weightBtn">
-        <video id="weightVideo"
-               src="images/weightlifter1.mp4"
-               muted
-               playsinline>
-        </video>
-
-        <img id="turbanDrop"
-             class="turban-drop"
-             src=""
-             alt="">
+        <video id="weightVideo" src="images/weightlifter1.mp4" muted playsinline></video>
+        <img id="turbanDrop" class="turban-drop" src="" alt="">
     </button>
-
 </div>
 
 <script src="script.js"></script>
-
 </body>
-
 </html>
