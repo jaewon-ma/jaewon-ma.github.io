@@ -24,6 +24,7 @@ const restartGif = (img) => {
   img.src = src;
 };
 
+//overlay gifs ontop of buttons
 const showOverlays = () => {
   restartGif(lampOverlay);
   restartGif(weightOverlay);
@@ -39,7 +40,7 @@ const hideOverlays = () => {
 const playOwnGifOnce = () => {
   stopGif();
   requestAnimationFrame(playGif);
-  setTimeout(stopGif, 1000); // match your gif's actual play length
+  setTimeout(stopGif, 1000);
 };
 
 const startPress = () => {
