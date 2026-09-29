@@ -81,7 +81,7 @@ const DROP_SRC = 'images/WeightDropAnimation.mp4';
 const HAPPY_SRC = 'images/HappyAnimation.mp4';
 const SPEED = 1.7;
 
-const DROP_TIME = 2.12; // seconds into animation when the weight lands
+const DROP_TIME = 2.55; // seconds into animation when the weight lands
 let hasDropped = false;
 let isDropping = false;
 
@@ -130,6 +130,7 @@ weightVideo.addEventListener('timeupdate', () => {
   if (isDropping && !hasDropped && weightVideo.currentTime >= DROP_TIME) {
     hasDropped = true;
     jumpLamp();
+    jumpSewingMachine();
   }
 });
 
@@ -175,6 +176,12 @@ const turnOffLamp = () => {
   if (levelIndex === BROKEN_INDEX) {
       setTimeout(resetLamp, BROKEN_TIME);
   }
+};
+
+const jumpSewingMachine = () => {
+  btn.classList.remove('sewing-jump');
+  void btn.offsetWidth;
+  btn.classList.add('sewing-jump');
 };
 
 const jumpLamp = () => {

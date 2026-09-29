@@ -84,3 +84,19 @@ body {
     top: -28%;
     left: 0;
 }
+
+@keyframes sewingJump {
+    0% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-2vh);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.sewing-jump {
+    animation: sewingJump 0.25s ease;
+}
