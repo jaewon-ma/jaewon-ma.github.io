@@ -58,6 +58,7 @@ body {
 #weightVideo {
     width: 80vh;
     height: auto;
+    aspect-ratio: 1130 / 1080;
     display: block;
     background: transparent;
 }
