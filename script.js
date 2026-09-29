@@ -1,4 +1,10 @@
 const btn = document.getElementById('sewingBtn');
+const lampOverlay = document.getElementById('lampOverlay');
+const weightOverlay = document.getElementById('weightOverlay');
+
+const HOLD_THRESHOLD = 250; // ms
+let holdTimer = null;
+let isHolding = false;
 
 const playGif = () => {
   btn.style.backgroundImage = "url('images/sewing-machine.gif')";
@@ -12,9 +18,57 @@ const playFastGif = () => {
   btn.style.backgroundImage = "url('images/sewing-machine-faster.gif')";
 };
 
-btn.addEventListener('mousedown', playGif);
-btn.addEventListener('mouseup', stopGif);
-btn.addEventListener('mouseleave', stopGif);
+const restartGif = (img) => {
+  const src = img.src;
+  img.src = '';
+  img.src = src;
+};
+
+const showOverlays = () => {
+  restartGif(lampOverlay);
+  restartGif(weightOverlay);
+  lampOverlay.classList.add('active');
+  weightOverlay.classList.add('active');
+};
+
+const hideOverlays = () => {
+  lampOverlay.classList.remove('active');
+  weightOverlay.classList.remove('active');
+};
+
+const playOwnGifOnce = () => {
+  stopGif();
+  requestAnimationFrame(playGif);
+  setTimeout(stopGif, 1000); // match your gif's actual play length
+};
+
+const startPress = () => {
+  isHolding = false;
+  holdTimer = setTimeout(() => {
+    isHolding = true;
+    showOverlays();
+  }, HOLD_THRESHOLD);
+};
+
+const endPress = () => {
+  clearTimeout(holdTimer);
+  if (isHolding) {
+    hideOverlays();
+  } else {
+    playOwnGifOnce();
+  }
+};
+
+btn.addEventListener('mousedown', startPress);
+btn.addEventListener('mouseup', endPress);
+btn.addEventListener('mouseleave', () => {
+  clearTimeout(holdTimer);
+  if (isHolding) hideOverlays();
+});
+
+// touch support
+btn.addEventListener('touchstart', startPress);
+btn.addEventListener('touchend', endPress);
 
 
 // Weightlifter

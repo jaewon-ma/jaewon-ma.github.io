@@ -53,6 +53,7 @@ body {
     padding: 0;
     cursor: pointer;
     margin-left: -11vh;
+    position: relative; /*added*/
 }
 
 #weightVideo {
@@ -61,4 +62,20 @@ body {
     aspect-ratio: 1130 / 1080;
     display: block;
     background: transparent;
+}
+
+.overlay-gif {
+    position: absolute;
+    top: 0;
+    left: -50px;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.overlay-gif.active {
+    opacity: 1;
 }
