@@ -22,50 +22,66 @@ btn.addEventListener('mouseleave', stopGif);
 const weightBtn = document.getElementById('weightBtn');
 const weightVideo = document.getElementById('weightVideo');
 
+const IDLE_SRC = 'images/weightlifter1.mp4';
 const DROP_SRC = 'images/WeightDropAnimation.mp4';
 const HAPPY_SRC = 'images/HappyAnimation.mp4';
-weightVideo.playbackRate = 1.7;
+const SPEED = 1.7;
 
-const DROP_TIME = 2.12; // seconds into weight-drop.mp4 when the weight lands
+const DROP_TIME = 2.12; // seconds into animation when the weight lands
 let hasDropped = false;
-let isHappy = false;
+let isDropping = false;
 
-const playWeightAnimation = () => {
-  hasDropped = false;
-  weightVideo.currentTime = 0;
+const setWeightVideo = (src, loop) => {
+  weightVideo.src = src;
+  weightVideo.loop = loop;
+  weightVideo.playbackRate = SPEED; // loading a new src resets speed to 1x
+};
+
+const startHover = () => {
+  isDropping = false;
+  setWeightVideo(IDLE_SRC, true);
   weightVideo.play();
 };
 
+const playWeightAnimation = () => {
+  isDropping = true;
+  hasDropped = false;
+  setWeightVideo(DROP_SRC, false);
+  weightVideo.play();
+};
+
+const releaseDrop = () => {
+  if (!isDropping) return;
+  landLamp();
+  startHover();
+};
+
 const stopWeightAnimation = () => {
-  weightVideo.pause();
-  weightVideo.currentTime = 0;
+  isDropping = false;
+  setWeightVideo(IDLE_SRC, false);
   landLamp();
 };
 
 const playHappyAnimation = () => {
-  isHappy = true;
-  weightVideo.src = HAPPY_SRC;
-  weightVideo.currentTime = 0;
+  isDropping = false;
+  setWeightVideo(HAPPY_SRC, false);
   weightVideo.play();
 };
 
 const stopHappyAnimation = () => {
-  isHappy = false;
-  weightVideo.src = DROP_SRC;
-  weightVideo.currentTime = 0;
-}
+  setWeightVideo(IDLE_SRC, false);
+};
 
 weightVideo.addEventListener('timeupdate', () => {
-  if (isHappy) return; // only the drop video makes the lamp jump
-  if (!hasDropped && weightVideo.currentTime >= DROP_TIME) {
+  if (isDropping && !hasDropped && weightVideo.currentTime >= DROP_TIME) {
     hasDropped = true;
     jumpLamp();
   }
-
 });
 
+weightBtn.addEventListener('mouseenter', startHover);
 weightBtn.addEventListener('mousedown', playWeightAnimation);
-weightBtn.addEventListener('mouseup', stopWeightAnimation);
+weightBtn.addEventListener('mouseup', releaseDrop);
 weightBtn.addEventListener('mouseleave', stopWeightAnimation);
 
 
