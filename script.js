@@ -8,6 +8,10 @@ const stopGif = () => {
   btn.style.backgroundImage = "url('images/sewing-machine.png')";
 };
 
+const playFastGif = () => {
+  btn.style.backgroundImage = "url('images/sewing-machine-faster.gif')";
+};
+
 btn.addEventListener('mousedown', playGif);
 btn.addEventListener('mouseup', stopGif);
 btn.addEventListener('mouseleave', stopGif);
@@ -18,9 +22,16 @@ btn.addEventListener('mouseleave', stopGif);
 const weightBtn = document.getElementById('weightBtn');
 const weightVideo = document.getElementById('weightVideo');
 
+const DROP_SRC = 'images/WeightDropAnimation.mp4';
+const HAPPY_SRC = 'images/HappyAnimation.mp4';
 weightVideo.playbackRate = 1.7;
 
+const DROP_TIME = 2.12; // seconds into weight-drop.mp4 when the weight lands
+let hasDropped = false;
+let isHappy = false;
+
 const playWeightAnimation = () => {
+  hasDropped = false;
   weightVideo.currentTime = 0;
   weightVideo.play();
 };
@@ -28,8 +39,84 @@ const playWeightAnimation = () => {
 const stopWeightAnimation = () => {
   weightVideo.pause();
   weightVideo.currentTime = 0;
+  landLamp();
 };
+
+const playHappyAnimation = () => {
+  isHappy = true;
+  weightVideo.src = HAPPY_SRC;
+  weightVideo.currentTime = 0;
+  weightVideo.play();
+};
+
+const stopHappyAnimation = () => {
+  isHappy = false;
+  weightVideo.src = DROP_SRC;
+  weightVideo.currentTime = 0;
+}
+
+weightVideo.addEventListener('timeupdate', () => {
+  if (isHappy) return; // only the drop video makes the lamp jump
+  if (!hasDropped && weightVideo.currentTime >= DROP_TIME) {
+    hasDropped = true;
+    jumpLamp();
+  }
+
+});
 
 weightBtn.addEventListener('mousedown', playWeightAnimation);
 weightBtn.addEventListener('mouseup', stopWeightAnimation);
 weightBtn.addEventListener('mouseleave', stopWeightAnimation);
+
+
+// Lamp
+
+const lampBtn = document.getElementById('lampBtn');
+const lampImg = document.getElementById('lampImg');
+
+const LEVELS = [100, 50, 25, 0];
+const BROKEN_INDEX = LEVELS.length - 1;
+const BROKEN_TIME = 60000; // 1 minute "repair time"
+
+let levelIndex = 0;
+let isOn = false;
+
+const resetLamp = () => {
+  levelIndex = 0;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+}
+
+const turnOnLamp = () => {
+  if (levelIndex === BROKEN_INDEX) return; // ignore press when broken
+  isOn = true;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-on.png`;
+  playHappyAnimation();
+  playFastGif();
+};
+
+const turnOffLamp = () => {
+  if (!isOn) return; // only react if lamp is on
+  isOn = false;
+  stopHappyAnimation();
+  stopGif();
+  levelIndex++;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+
+  if (levelIndex === BROKEN_INDEX) {
+      setTimeout(resetLamp, BROKEN_TIME);
+  }
+};
+
+const jumpLamp = () => {
+  if (levelIndex === BROKEN_INDEX) return; // no jump when broken
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-jump.png`;
+};
+
+const landLamp = () => {
+  if (levelIndex === BROKEN_INDEX) return;
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+};
+
+lampBtn.addEventListener('mousedown', turnOnLamp);
+lampBtn.addEventListener('mouseup', turnOffLamp);
+lampBtn.addEventListener('mouseleave', turnOffLamp);
