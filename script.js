@@ -1,192 +1,249 @@
-const btn = document.getElementById('sewingBtn');
-const lampOverlay = document.getElementById('lampOverlay');
-const weightOverlay = document.getElementById('weightOverlay');
+const sewingBtn = document.getElementById('sewingBtn');
 
-const HOLD_THRESHOLD = 250; // ms
-let holdTimer = null;
-let isHolding = false;
-
-const playGif = () => {
-  btn.style.backgroundImage = "url('images/sewing-machine.gif')";
+const playSewing = () => {
+  sewingBtn.style.backgroundImage = "url('images/sewing-machine.gif')";
 };
 
-const stopGif = () => {
-  btn.style.backgroundImage = "url('images/sewing-machine.png')";
+const stopSewing = () => {
+  sewingBtn.style.backgroundImage = "url('images/sewing-machine.png')";
 };
 
-const playFastGif = () => {
-  btn.style.backgroundImage = "url('images/sewing-machine-faster.gif')";
+const playFastSewing = () => {
+  sewingBtn.style.backgroundImage = "url('images/sewing-machine-faster.gif')";
 };
 
-const restartGif = (img) => {
-  const src = img.src;
-  img.src = '';
-  img.src = src;
-};
-
-const showOverlays = () => {
-  restartGif(lampOverlay);
-  restartGif(weightOverlay);
-  lampOverlay.classList.add('active');
-  weightOverlay.classList.add('active');
-};
-
-const hideOverlays = () => {
-  lampOverlay.classList.remove('active');
-  weightOverlay.classList.remove('active');
-};
-
-const playOwnGifOnce = () => {
-  stopGif();
-  requestAnimationFrame(playGif);
-  setTimeout(stopGif, 1000); // match your gif's actual play length
-};
-
-const startPress = () => {
-  isHolding = false;
-  holdTimer = setTimeout(() => {
-    isHolding = true;
-    showOverlays();
-  }, HOLD_THRESHOLD);
-};
-
-const endPress = () => {
-  clearTimeout(holdTimer);
-  if (isHolding) {
-    hideOverlays();
-  } else {
-    playOwnGifOnce();
-  }
-};
-
-btn.addEventListener('mousedown', startPress);
-btn.addEventListener('mouseup', endPress);
-btn.addEventListener('mouseleave', () => {
-  clearTimeout(holdTimer);
-  if (isHolding) hideOverlays();
-});
-
-// touch support
-btn.addEventListener('touchstart', startPress);
-btn.addEventListener('touchend', endPress);
-
-
-// Weightlifter
+sewingBtn.addEventListener('mouseenter', playSewing);
+sewingBtn.addEventListener('mouseleave', stopSewing);
 
 const weightBtn = document.getElementById('weightBtn');
 const weightVideo = document.getElementById('weightVideo');
+const turbanDrop = document.getElementById('turbanDrop');
 
 const IDLE_SRC = 'images/weightlifter1.mp4';
 const DROP_SRC = 'images/WeightDropAnimation.mp4';
 const HAPPY_SRC = 'images/HappyAnimation.mp4';
-const SPEED = 1.7;
 
-const DROP_TIME = 2.12; // seconds into animation when the weight lands
+const SPEED = 1.7;
+const DROP_TIME = 2.55;
+
 let hasDropped = false;
 let isDropping = false;
+let isWeightHovered = false;
+let isLampHovered = false;
 
 const setWeightVideo = (src, loop) => {
   weightVideo.src = src;
   weightVideo.loop = loop;
-  weightVideo.playbackRate = SPEED; // loading a new src resets speed to 1x
-};
-
-const startHover = () => {
-  isDropping = false;
-  setWeightVideo(IDLE_SRC, true);
+  weightVideo.playbackRate = SPEED;
   weightVideo.play();
 };
 
-const playWeightAnimation = () => {
+const startWeightHover = () => {
+  if (isDropping) return;
+
+  setWeightVideo(IDLE_SRC, true);
+};
+
+const stopWeightHover = () => {
+  if (isDropping) return;
+
+  weightVideo.pause();
+  weightVideo.src = IDLE_SRC;
+  weightVideo.loop = false;
+  weightVideo.currentTime = 0;
+};
+
+const playWeightDrop = () => {
+  if (isDropping) return;
+
   isDropping = true;
   hasDropped = false;
   setWeightVideo(DROP_SRC, false);
-  weightVideo.play();
-};
-
-const releaseDrop = () => {
-  if (!isDropping) return;
-  landLamp();
-  startHover();
-};
-
-const stopWeightAnimation = () => {
-  isDropping = false;
-  setWeightVideo(IDLE_SRC, false);
-  landLamp();
 };
 
 const playHappyAnimation = () => {
-  isDropping = false;
-  setWeightVideo(HAPPY_SRC, false);
-  weightVideo.play();
+  if (isDropping) return;
+
+  setWeightVideo(HAPPY_SRC, true);
 };
 
 const stopHappyAnimation = () => {
-  setWeightVideo(IDLE_SRC, false);
+  if (isDropping) return;
+
+  if (isWeightHovered) {
+    startWeightHover();
+    return;
+  }
+
+  stopWeightHover();
+};
+
+const jumpSewingMachine = () => {
+  sewingBtn.classList.remove('sewing-jump');
+  void sewingBtn.offsetWidth;
+  sewingBtn.classList.add('sewing-jump');
 };
 
 weightVideo.addEventListener('timeupdate', () => {
-  if (isDropping && !hasDropped && weightVideo.currentTime >= DROP_TIME) {
-    hasDropped = true;
-    jumpLamp();
-  }
+  if (!isDropping) return;
+  if (hasDropped) return;
+  if (weightVideo.currentTime < DROP_TIME) return;
+
+  hasDropped = true;
+  jumpLamp();
+  jumpSewingMachine();
 });
 
-weightBtn.addEventListener('mouseenter', startHover);
-weightBtn.addEventListener('mousedown', playWeightAnimation);
-weightBtn.addEventListener('mouseup', releaseDrop);
-weightBtn.addEventListener('mouseleave', stopWeightAnimation);
+weightVideo.addEventListener('ended', () => {
+  if (!isDropping) return;
 
+  isDropping = false;
+  hasDropped = false;
 
-// Lamp
+  if (isLampHovered) {
+    playHappyAnimation();
+    return;
+  }
+
+  if (isWeightHovered) {
+    startWeightHover();
+    return;
+  }
+
+  stopWeightHover();
+});
+
+weightBtn.addEventListener('mouseenter', () => {
+  isWeightHovered = true;
+  startWeightHover();
+});
+
+weightBtn.addEventListener('mouseleave', () => {
+  isWeightHovered = false;
+  stopWeightHover();
+});
+
+weightBtn.addEventListener('click', playWeightDrop);
 
 const lampBtn = document.getElementById('lampBtn');
 const lampImg = document.getElementById('lampImg');
+const lampLight = document.getElementById('lampLight');
+const threadWrap = document.getElementById('threadWrap');
 
 const LEVELS = [100, 50, 25, 0];
 const BROKEN_INDEX = LEVELS.length - 1;
-const BROKEN_TIME = 60000; // 1 minute "repair time"
+const BROKEN_TIME = 60000;
 
 let levelIndex = 0;
 let isOn = false;
+let lampLightSuppressed = false;
 
 const resetLamp = () => {
   levelIndex = 0;
+  isOn = false;
   lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
-}
+};
+
+const showLampLight = () => {
+  isLampHovered = true;
+
+  if (levelIndex === BROKEN_INDEX) return;
+  if (lampLightSuppressed) return;
+
+  lampLight.classList.add('visible');
+  playHappyAnimation();
+};
+
+const hideLampLight = () => {
+  lampLight.classList.remove('visible');
+};
+
+const leaveLamp = () => {
+  isLampHovered = false;
+  lampLightSuppressed = false;
+  hideLampLight();
+  stopHappyAnimation();
+  turnOffLamp();
+};
 
 const turnOnLamp = () => {
-  if (levelIndex === BROKEN_INDEX) return; // ignore press when broken
+  if (levelIndex === BROKEN_INDEX) return;
+
+  lampLightSuppressed = true;
+  hideLampLight();
+  stopHappyAnimation();
+
   isOn = true;
   lampImg.src = `images/lamp-${LEVELS[levelIndex]}-on.png`;
-  playHappyAnimation();
-  playFastGif();
 };
 
 const turnOffLamp = () => {
-  if (!isOn) return; // only react if lamp is on
+  if (!isOn) return;
+
   isOn = false;
-  stopHappyAnimation();
-  stopGif();
   levelIndex++;
+
   lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
 
   if (levelIndex === BROKEN_INDEX) {
-      setTimeout(resetLamp, BROKEN_TIME);
+    hideLampLight();
+    stopHappyAnimation();
+    setTimeout(resetLamp, BROKEN_TIME);
   }
 };
 
 const jumpLamp = () => {
-  if (levelIndex === BROKEN_INDEX) return; // no jump when broken
+  if (levelIndex === BROKEN_INDEX) return;
+
   lampImg.src = `images/lamp-${LEVELS[levelIndex]}-jump.png`;
+  setTimeout(landLamp, 220);
 };
 
 const landLamp = () => {
   if (levelIndex === BROKEN_INDEX) return;
-  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-off.png`;
+
+  const state = isOn ? 'on' : 'off';
+  lampImg.src = `images/lamp-${LEVELS[levelIndex]}-${state}.png`;
 };
 
+lampBtn.addEventListener('mouseenter', showLampLight);
+lampBtn.addEventListener('mouseleave', leaveLamp);
 lampBtn.addEventListener('mousedown', turnOnLamp);
 lampBtn.addEventListener('mouseup', turnOffLamp);
-lampBtn.addEventListener('mouseleave', turnOffLamp);
+
+const restartThreadAnimation = () => {
+  threadWrap.classList.remove('active');
+  void threadWrap.offsetWidth;
+  threadWrap.classList.add('active');
+};
+
+const playTurbanDrop = () => {
+  turbanDrop.style.display = 'block';
+  turbanDrop.src = '';
+
+  requestAnimationFrame(() => {
+    turbanDrop.src = 'images/turban-drop.gif';
+  });
+
+  setTimeout(() => {
+    turbanDrop.style.display = 'none';
+  }, 1100);
+};
+
+const sewingClick = () => {
+  playFastSewing();
+  restartThreadAnimation();
+
+  setTimeout(playTurbanDrop, 650);
+
+  setTimeout(() => {
+    if (sewingBtn.matches(':hover')) {
+      playSewing();
+      return;
+    }
+
+    stopSewing();
+  }, 1300);
+};
+
+sewingBtn.addEventListener('click', sewingClick);
